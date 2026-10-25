@@ -1,27 +1,49 @@
-
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import {
+  IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonItem,
+  IonIcon, IonLabel, IonMenuToggle, IonRouterOutlet,
+} from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
+import { homeOutline, listOutline, statsChartOutline, logOutOutline } from 'ionicons/icons';
+import { filter } from 'rxjs';
+import { SupabaseService } from './services/supabase.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
-  imports: [RouterLink, RouterLinkActive, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterLink, IonRouterOutlet],
+  standalone: true,
+  imports: [
+    RouterLink, IonApp, IonSplitPane, IonMenu, IonContent, IonList,
+    IonItem, IonIcon, IonLabel, IonMenuToggle, IonRouterOutlet,
+  ],
 })
 export class AppComponent {
-  protected readonly appPages = [
-    { title: 'Inbox', url: '/folder/Inbox', icon: 'mail' },
-    { title: 'Outbox', url: '/folder/Outbox', icon: 'paper-plane' },
-    { title: 'Favorites', url: '/folder/Favorites', icon: 'heart' },
-    { title: 'Archived', url: '/folder/Archived', icon: 'archive' },
-    { title: 'Trash', url: '/folder/Trash', icon: 'trash' },
-    { title: 'Spam', url: '/folder/Spam', icon: 'warning' },
-  ];
-  protected readonly labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor() {
-    addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
+  // Controlan qué se ve en el menú
+  mostrarMenu = false;
+  esAdmin = false;
+
+  constructor(private router: Router, private supabase: SupabaseService) {
+    addIcons({ homeOutline, listOutline, statsChartOutline, logOutOutline });
+
+    // Cada vez que cambia la ruta, comprobamos si hay que mostrar el menú
+    this.router.events
+      .pipe(filter(evento => evento instanceof NavigationEnd))
+      .subscribe(async () => {
+        const enLogin = this.router.url === '/login' || this.router.url === '/';
+        this.mostrarMenu = !enLogin;
+
+        if (this.mostrarMenu) {
+          this.esAdmin = (await this.supabase.obtenerRol()) === 'admin';
+        }
+      });
+  }
+
+  // Cierra sesión y vuelve al login
+  async salir() {
+    await this.supabase.logout();
+    this.esAdmin = false;
+    this.router.navigate(['/login']);
   }
 }

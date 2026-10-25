@@ -15,6 +15,21 @@ export class SupabaseService {
   async login(email: string, password: string) {
     return await this.supabase.auth.signInWithPassword({ email, password });
   }
+    // Cierra la sesión del usuario
+  async logout() {
+    await this.supabase.auth.signOut();
+  }
+    // Devuelve el token (JWT) de la sesión actual
+  async obtenerToken(): Promise<string | null> {
+    const { data } = await this.supabase.auth.getSession();
+    return data.session?.access_token ?? null;
+  }
+
+  // Devuelve true si hay un usuario con sesión iniciada
+  async haySesion(): Promise<boolean> {
+    const { data } = await this.supabase.auth.getSession();
+    return data.session !== null;
+  }
 
   // Obtiene el rol del usuario logueado
   async obtenerRol(): Promise<string> {

@@ -1,33 +1,42 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay">
+  <ion-split-pane contentId="main-content" [disabled]="!mostrarMenu">
+    <ion-menu contentId="main-content" type="overlay" [disabled]="!mostrarMenu">
       <ion-content>
-        <ion-list id="inbox-list">
-          <ion-list-header>Inbox</ion-list-header>
-          <ion-note>hi&#64;ionicframework.com</ion-note>
-
-          @for (p of appPages; track p; let i = $index) {
-            <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                <ion-label>{{ p.title }}</ion-label>
+        <nav aria-label="Menú principal">
+          <ion-list>
+            <ion-menu-toggle autoHide="false">
+              <ion-item routerLink="/inicio" routerDirection="root" lines="none" button>
+                <ion-icon slot="start" name="home-outline" aria-hidden="true"></ion-icon>
+                <ion-label>Inicio</ion-label>
               </ion-item>
             </ion-menu-toggle>
-          }
-        </ion-list>
 
-        <ion-list id="labels-list">
-          <ion-list-header>Labels</ion-list-header>
+            <ion-menu-toggle autoHide="false">
+              <ion-item routerLink="/registros" routerDirection="root" lines="none" button>
+                <ion-icon slot="start" name="list-outline" aria-hidden="true"></ion-icon>
+                <ion-label>Registros</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
 
-          @for (label of labels; track label) {
-            <ion-item lines="none">
-              <ion-icon aria-hidden="true" slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-              <ion-label>{{ label }}</ion-label>
+            <!-- Solo el administrador ve el dashboard -->
+            @if (esAdmin) {
+              <ion-menu-toggle autoHide="false">
+                <ion-item routerLink="/dashboard" routerDirection="root" lines="none" button>
+                  <ion-icon slot="start" name="stats-chart-outline" aria-hidden="true"></ion-icon>
+                  <ion-label>Dashboard</ion-label>
+                </ion-item>
+              </ion-menu-toggle>
+            }
+
+            <ion-item lines="none" button (click)="salir()">
+              <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon>
+              <ion-label>Cerrar sesión</ion-label>
             </ion-item>
-          }
-        </ion-list>
+          </ion-list>
+        </nav>
       </ion-content>
     </ion-menu>
+
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>
 </ion-app>

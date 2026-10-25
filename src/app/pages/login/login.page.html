@@ -1,0 +1,45 @@
+<ion-content class="ion-padding">
+  <main class="contenedor-login">
+    <h1>Iniciar sesión</h1>
+
+    <form [formGroup]="formulario" (ngSubmit)="entrar()">
+      <ion-item>
+        <ion-input
+          label="Correo electrónico"
+          labelPlacement="floating"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+        ></ion-input>
+      </ion-item>
+      @if (formulario.controls.email.touched && formulario.controls.email.invalid) {
+        <p class="error" role="alert">Escribe un correo válido</p>
+      }
+
+      <ion-item>
+        <ion-input
+          label="Contraseña"
+          labelPlacement="floating"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+        ></ion-input>
+      </ion-item>
+      @if (formulario.controls.password.touched && formulario.controls.password.invalid) {
+        <p class="error" role="alert">La contraseña debe tener al menos 6 caracteres</p>
+      }
+
+      @if (mensajeError) {
+        <p class="error" role="alert">{{ mensajeError }}</p>
+      }
+
+      <ion-button expand="block" type="submit" [disabled]="cargando">
+        @if (cargando) {
+          <ion-spinner name="crescent" aria-label="Cargando"></ion-spinner>
+        } @else {
+          Entrar
+        }
+      </ion-button>
+    </form>
+  </main>
+</ion-content>

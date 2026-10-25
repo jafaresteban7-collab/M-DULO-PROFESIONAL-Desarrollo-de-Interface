@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Registros</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <main>
+  @if (cargando()) {
+    <ion-spinner name="crescent" aria-label="Cargando registros"></ion-spinner>
+  } @else if (error()) {
+    <p role="alert">{{ error() }}</p>
+  } @else {
+    <ion-list>
+      @for (r of registros(); track r.id) {
+        <ion-item>
+          <ion-label>
+            <h2>{{ r.nombre }}</h2>
+            <p>{{ r.correo }} · {{ r.categoria }} · {{ r.estado }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</main>
